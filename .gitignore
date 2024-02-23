@@ -4,6 +4,7 @@ __pycache__
 *.pth
 /venv
 /tmp
+/temp
 /outputs
 /log
 /.idea

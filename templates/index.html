@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="no-referrer">
+  <title>好心情 - SD Webui API</title>
+
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+
+    <div class="form-inline" >
+
+        <div class="col-sm-8 my-1 form-group" style="justify-content: center">
+            <label class="mr-sm-1" for="keyword" >关键字：</label>
+            <input  id="keyword" name="keyword" l>
+        </div>
+
+        <div class="col-sm-2 my-1 form-group" style="justify-content: center">
+                <button class="btn btn-primary" type="submit"  id='query_btn'  onclick='query()' >查询
+                </button>
+        </div>
+
+        <div class="col-sm-2 my-1 form-group" style="justify-content: center">
+                <button class="btn btn-primary" type="submit"  id='create_btn'  onclick='create()' >生成
+                </button>
+        </div>
+
+    </div>
+
+    <div style="text-align: center; display: grid;">
+
+        <div id="image_list" style="text-align: center; display: table;">
+            {% for image in image_list %}
+                <td>
+                    <img src="http://127.0.0.1:32102/get_file/{{ image.url }}"  width="512" height="512" >
+
+                </td>
+            {% endfor %}
+
+        </div>
+    </div>
+
+
+
+
+
+<script>
+
+    function query() {
+        var keyword = $("#keyword").val();
+
+        const url = "/get_images?keyword=" + keyword;
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                console.log("images data:",data.images)
+                let image_list_html = "";
+
+                for (let i = 0; i < data.images.length; i++) {
+                    let image_name = data.images[i].url
+                    let image_url = "http://127.0.0.1:32102/get_file/" + image_name
+                    image_list_html += "<td><img src="+ image_url +" width=512 height=512 ></td>"
+                }
+
+                $("#image_list").html(image_list_html);
+
+            },
+            error: function (msg) {
+                alert("页面出错，请刷新页面！");
+            }
+        })
+
+    }
+
+    function create() {
+        var keyword = $("#keyword").val();
+        $.ajax({
+            type: 'post',
+            url: '/api/txt2img',
+            dataType: 'json',
+            data: JSON.stringify(
+                {
+                "txt2img_input": {"prompt": keyword}
+                }
+            ),
+            contentType: 'application/json',
+            async: true,
+            success: function(response) {
+                alert("图片已生成");
+            }
+        })
+
+    }
+</script>
+
+</body>
+</html>
