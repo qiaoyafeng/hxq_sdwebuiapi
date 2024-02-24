@@ -32,14 +32,16 @@
 
     </div>
 
+    <div id="spinner-div" style="text-align: center;">
+          <div class="spinner-border text-primary" role="status">
+          </div>
+    </div>
+
     <div style="text-align: center; display: grid;">
 
         <div id="image_list" style="text-align: center; display: table;">
             {% for image in image_list %}
-                <td>
-                    <img src="http://127.0.0.1:32102/get_file/{{ image.url }}"  width="512" height="512" >
-
-                </td>
+                    <img src="/get_file/{{ image.url }}"  width="512" height="512" >
             {% endfor %}
 
         </div>
@@ -51,7 +53,10 @@
 
 <script>
 
+    $("#spinner-div").hide();
+
     function query() {
+        $("#spinner-div").show();
         var keyword = $("#keyword").val();
 
         const url = "/get_images?keyword=" + keyword;
@@ -67,8 +72,8 @@
 
                 for (let i = 0; i < data.images.length; i++) {
                     let image_name = data.images[i].url
-                    let image_url = "http://127.0.0.1:32102/get_file/" + image_name
-                    image_list_html += "<td><img src="+ image_url +" width=512 height=512 ></td>"
+                    let image_url = "/get_file/" + image_name
+                    image_list_html += "<img src="+ image_url +" width=512 height=512 >"
                 }
 
                 $("#image_list").html(image_list_html);
@@ -76,12 +81,16 @@
             },
             error: function (msg) {
                 alert("页面出错，请刷新页面！");
-            }
+            },
+            complete: function () {
+                    $("#spinner-div").hide();
+                  }
         })
 
     }
 
     function create() {
+        $("#spinner-div").show();
         var keyword = $("#keyword").val();
         $.ajax({
             type: 'post',
@@ -96,7 +105,10 @@
             async: true,
             success: function(response) {
                 alert("图片已生成");
-            }
+            },
+            complete: function () {
+                    $("#spinner-div").hide();
+                  }
         })
 
     }
